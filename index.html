@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ukoo wa Sinienga na Wanafamilia Wengine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.78.0/dist/umd/supabase.js"></script>
+<style>
+:root{--bg:#000;--card:#15151c;--line:#2a2a36;--tx:#f4f2f7;--mu:#9a98a8;--pink:#ff3d9a;--or:#ff8a1f;--bl:#2f7bff;--ok:#2ecc71;--bad:#ff4d4d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 Georgia,'Times New Roman',serif}
+h1,h2,h3,button,label,.tag{font-family:system-ui,Segoe UI,Arial,sans-serif}
+header{position:relative;padding:28px 76px;text-align:center;background:linear-gradient(90deg,#1a0a14,#000 50%,#0a1224)}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#b8860b,#ffd700,#fff1a8,#ffd700,#b8860b);background-size:200% 100%;animation:gl2 5s linear infinite}
+.tr{position:absolute;bottom:6px;width:60px;height:80px}.tr.l{left:10px}.tr.r{right:10px}
+.gold{background:linear-gradient(110deg,#a8740a,#ffd700,#fff4b0,#d4a017,#a8740a);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gl 5s linear infinite}
+@keyframes gl{to{background-position:-250% 0}}@keyframes gl2{to{background-position:-200% 0}}
+.av{display:inline-grid;place-items:center;width:34px;height:34px;margin-right:10px;border-radius:50%;background:linear-gradient(135deg,#b8860b,#ffd700);color:#000;font:700 15px system-ui,sans-serif;font-style:normal}
+@media(prefers-reduced-motion:reduce){.gold,header::after{animation:none}}
+header h1{margin:0;font-size:clamp(20px,5vw,34px);letter-spacing:.3px}
+header p{margin:6px 0 0;color:var(--or)}
+main{max-width:920px;margin:0 auto;padding:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+input,select{width:100%;padding:11px;margin:4px 0 12px;background:#0b0b10;color:var(--tx);border:1px solid var(--line);border-radius:6px;font-size:16px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--bl)}
+input[type=date]{color-scheme:dark;cursor:pointer;min-height:46px}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:12px}.pt{text-align:center;font:14px system-ui,sans-serif;overflow-wrap:anywhere}
+.pt img,.pt .big{display:grid;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:10px;border:2px solid #d4a017;margin:0 0 6px;font-size:36px}
+button{padding:10px 16px;border:0;border-radius:6px;background:var(--pink);color:#fff;font-weight:600;cursor:pointer;font-size:15px}
+button.b{background:var(--bl)}button.o{background:var(--or);color:#000}button.g{background:transparent;border:1px solid var(--line);color:var(--tx)}button.r{background:var(--bad)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;border:1px solid var(--line)}
+.ok{color:var(--ok);border-color:var(--ok)}.wait{color:var(--or);border-color:var(--or)}.no{color:var(--bad);border-color:var(--bad)}
+.lipa{font-size:34px;font-weight:700;color:#ff3030;font-family:system-ui,sans-serif;letter-spacing:2px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.row:last-child{border:0}.mu{color:var(--mu);font-size:14px}
+#msg{position:sticky;top:0;z-index:5}.m{padding:10px 14px;margin:8px 0;border-radius:6px;background:#10202f;border-left:4px solid var(--bl)}.m.e{background:#2a1010;border-color:var(--bad)}
+.hide{display:none}
+#mb{position:absolute;top:12px;left:12px;z-index:3;width:44px;height:44px;padding:0;font-size:22px;background:linear-gradient(135deg,#b8860b,#ffd700);color:#000}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;opacity:0;pointer-events:none}
+#ov.on{opacity:1;pointer-events:auto}
+#dr{position:fixed;top:0;bottom:0;left:0;width:min(280px,82vw);z-index:21;background:var(--card);border-right:2px solid #d4a017;transform:translateX(-100%);padding:20px 14px;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+#dr.on{transform:none}
+#lead{position:absolute;top:10px;right:10px;z-index:3;width:68px;height:68px;padding:0;border-radius:50%;border:3px solid #d4a017;overflow:hidden;background:#000;cursor:pointer}
+#lead img{width:100%;height:100%;object-fit:cover;display:block}
+#lm{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.85);display:none;place-items:center;padding:20px;text-align:center}
+#lm.on{display:grid}
+#ft{max-width:920px;margin:26px auto 0;padding:18px 18px calc(24px + env(safe-area-inset-bottom,0px));border-top:3px solid #d4a017}
+.cn{font:700 20px system-ui,sans-serif;letter-spacing:1px}
+a.bt{display:inline-block;padding:10px 16px;border-radius:6px;color:#fff;font:600 15px system-ui,sans-serif;text-decoration:none}
+a.wa{background:#1fa855}a.sm{background:var(--bl)}
+textarea{width:100%;padding:11px;margin:4px 0 12px;background:#0b0b10;color:var(--tx);border:1px solid var(--line);border-radius:6px;font-size:16px;font-family:inherit}
+.tk{overflow:hidden;white-space:nowrap}.tk span{display:inline-block;color:var(--or);font:600 17px system-ui,sans-serif;animation:tk 25s linear infinite}
+@keyframes tk{from{transform:translateX(-100%)}to{transform:translateX(100vw)}}
+@media(prefers-reduced-motion:reduce){.tk{white-space:normal}.tk span{animation:none}}
+canvas{max-width:100%;height:auto;border-radius:10px;display:block;margin-bottom:12px}
+#lm img{width:min(260px,70vw);height:min(260px,70vw);border-radius:50%;object-fit:cover;border:4px solid #d4a017;margin-bottom:14px}
+#dr button{display:block;width:100%;text-align:left;margin:0 0 10px;padding:14px;background:transparent;border:1px solid var(--line);color:var(--tx);font-size:16px}
+#dr button.pri{background:var(--pink);border-color:var(--pink)}
+@media(prefers-reduced-motion:no-preference){#dr{transition:transform .25s}#ov{transition:opacity .25s}}
+@media(prefers-reduced-motion:no-preference){.card{transition:border-color .2s}.card:hover{border-color:var(--pink)}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8860b"/><stop offset=".5" stop-color="#ffd700"/><stop offset="1" stop-color="#d4a017"/></linearGradient><symbol id="tree" viewBox="0 0 60 80"><rect x="27" y="48" width="6" height="30" fill="#6b4a12"/><circle cx="30" cy="30" r="22" fill="url(#gd)"/><circle cx="15" cy="44" r="14" fill="url(#gd)" opacity=".9"/><circle cx="45" cy="44" r="14" fill="url(#gd)" opacity=".9"/></symbol></defs></svg>
+<header><button id="mb" aria-label="Fungua menyu" onclick="menu(1)">☰</button><svg class="tr l" aria-hidden="true"><use href="#tree"/></svg><button id="lead" aria-label="Kiongozi wa familia" onclick="leader()"><img src="data:image/jpeg;base64,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" alt="Mussa Sinienga"></button><h1 class="gold">UKOO WA SINIENGA NA WANAFAMILIA WENGINE</h1><p>Pamoja tunashirikiana</p></header>
+<div id="ov" onclick="menu(0)"></div><div id="lm" onclick="this.classList.remove('on')"><div><img id="lmi" alt="Mussa Sinienga"><h3 class="gold" style="margin:0 0 6px">MH. MWENYEKITI NDUGU MUSSA SINIENGA</h3><div class="mu">Kiongozi wa familia</div></div></div><aside id="dr" aria-label="Menyu"><h3 class="gold" style="margin:0 0 16px">Menyu</h3><button onclick="goPage('home')">Nyumbani</button><button onclick="goPage('hist')">Historia ya familia</button><button onclick="goPage('goals')">Malengo ya familia</button><button class="pri" onclick="goPage('reg')">Jisajili</button></aside><main><div id="msg"></div><div id="app"></div></main>
+<footer id="ft"><h3 class="gold" style="margin:0 0 6px">Mawasiliano na Msaada</h3><p class="mu" style="margin:0 0 10px">Una shida ya kujisajili, kuingia au kulipa? Tutumie ujumbe kwa WhatsApp au SMS ya kawaida.</p><div class="row"><span class="cn">0628846719</span><span><a class="bt wa" href="https://wa.me/255628846719?text=Habari%2C%20naomba%20msaada%20kuhusu%20mfumo%20wa%20Ukoo%20wa%20Sinienga%20na%20Wanafamilia%20Wengine." target="_blank" rel="noopener">WhatsApp</a> <a class="bt sm" href="sms:+255628846719?body=Habari%2C%20naomba%20msaada%20kuhusu%20mfumo%20wa%20Ukoo%20wa%20Sinienga%20na%20Wanafamilia%20Wengine.">SMS</a></span></div><div class="row"><span class="cn">0756580586</span><span><a class="bt wa" href="https://wa.me/255756580586?text=Habari%2C%20naomba%20msaada%20kuhusu%20mfumo%20wa%20Ukoo%20wa%20Sinienga%20na%20Wanafamilia%20Wengine." target="_blank" rel="noopener">WhatsApp</a> <a class="bt sm" href="sms:+255756580586?body=Habari%2C%20naomba%20msaada%20kuhusu%20mfumo%20wa%20Ukoo%20wa%20Sinienga%20na%20Wanafamilia%20Wengine.">SMS</a></span></div><div class="row"><span class="cn">0716385807</span><span><a class="bt wa" href="https://wa.me/255716385807?text=Habari%2C%20naomba%20msaada%20kuhusu%20mfumo%20wa%20Ukoo%20wa%20Sinienga%20na%20Wanafamilia%20Wengine." target="_blank" rel="noopener">WhatsApp</a> <a class="bt sm" href="sms:+255716385807?body=Habari%2C%20naomba%20msaada%20kuhusu%20mfumo%20wa%20Ukoo%20wa%20Sinienga%20na%20Wanafamilia%20Wengine.">SMS</a></span></div><p class="mu" style="margin:12px 0 0">Barua pepe: <a href="mailto:abuukihaka04@gmail.com" style="color:var(--or)">abuukihaka04@gmail.com</a></p></footer>
+<script>
+// ===== WEKA TAARIFA ZAKO HAPA =====
+const SUPABASE_URL = "https://XXXXXXXX.supabase.co";
+const SUPABASE_KEY = "WEKA_PUBLISHABLE_KEY";
+const LIPA_NAMBA = "350015302";
+const LIPA_JINA = "ABDUL MUSSA KIHAKA";
+const ADMIN_USERNAME = "admin";
+const ADMIN_EMAIL = "abuukihaka04@gmail.com";
+const FAMILIES = ["SINIENGA","MWAMPAMBA","KIHAKA","SIMCHIMBA","MAMUYOTA","WILITONI","BATON"];
+const PLANS = {monthly:{amount:5000,label:"Mwezi 1 - TSh 5,000",days:30}, yearly:{amount:60000,label:"Miezi 12 - TSh 60,000",days:365}};
+// ===================================
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mail = u => {const n=u.trim().toLowerCase().replace(/[^a-z0-9._-]/g,"");return n===ADMIN_USERNAME?ADMIN_EMAIL:n+"@ukoo.family"};
+const memNo = p => "UKOO-" + String(p.member_seq).padStart(4,"0");
+let me = null, tab = "home";
+
+function say(t, err){ $("msg").innerHTML = `<div class="m ${err?'e':''}">${esc(t)}</div>`; setTimeout(()=>$("msg").innerHTML="",6000); }
+const tagOf = s => ({approved:'<span class="tag ok">Amekubaliwa</span>',confirmed:'<span class="tag ok">Imethibitishwa</span>',pending:'<span class="tag wait">Inasubiri</span>',rejected:'<span class="tag no">Imekataliwa</span>'}[s]||s);
+
+async function boot(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(recovering) return recoverView();
+  if(!session){ me=null; return authView(); }
+  const {data,error} = await sb.from("fh2_profiles").select("*").eq("id",session.user.id).single();
+  if(error||!data){ await sb.auth.signOut(); return authView(); }
+  me = data; render();
+}
+
+let photo="";
+const inp=(id,l,t="text",x="")=>`<label>${l}</label><input id="${id}" type="${t}" ${x}>`;
+const sel=(id,l,o)=>`<label>${l}</label><select id="${id}">${o.map(v=>`<option>${v}</option>`).join("")}</select>`;
+function pickPhoto(i){const f=i.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=240;c.height=300;const x=c.getContext("2d"),r=Math.max(240/im.width,300/im.height),w=im.width*r,h=im.height*r;x.drawImage(im,(240-w)/2,(300-h)/2,w,h);photo=c.toDataURL("image/jpeg",.7);const v=$("ph_v");v.src=photo;v.classList.remove("hide")};im.src=URL.createObjectURL(f)}
+function regForm(){return `<h3 style="margin:0 0 8px">Fomu ya usajili</h3>
+<label>Picha ya passport size</label><input id="ph_f" type="file" accept="image/*" onchange="pickPhoto(this)"><img id="ph_v" class="hide" alt="" style="width:96px;height:120px;object-fit:cover;border-radius:8px;border:2px solid var(--or);margin-bottom:12px">
+${sel("f","Ametoka kwenye familia ya nani",FAMILIES)}${inp("n","Majina kamili")}${inp("dob","Tarehe ya kuzaliwa (bonyeza kuchagua kwenye kalenda)","date",'min="1900-01-01" max="'+new Date().toISOString().slice(0,10)+'" onclick="try{this.showPicker()}catch(e){}"')}
+${sel("ms","Hali ya ndoa",["Hajaoa / Hajaolewa","Ameoa","Ameolewa","Mjane / Mgane","Ametaliki"])}${inp("ch","Idadi ya watoto","number",'min="0" value="0"')}
+${inp("ph","Namba ya simu","tel")}${inp("ph2","Namba nyingine ya simu (si lazima)","tel")}
+${inp("kn","Jina la mtu wa karibu")}${inp("kp","Namba ya simu ya mtu wa karibu","tel")}
+<div class="m" style="margin:6px 0 14px">Taarifa hizi tunataka ili tusisumbuke wakati wa kukutafuta.</div>
+${inp("res","Anaishi wapi kwa sasa (maelezo ya mahali)")}${inp("nida","Namba ya NIDA")}${inp("rg","Mkoa anaoishi")}${inp("ds","Wilaya")}${inp("wd","Kata au kijiji")}${inp("mt","Mtaa")}${inp("sh","Namba ya shina")}${inp("ln","Jina la mjumbe au mwenyekiti wa mtaa")}${inp("lp","Namba ya simu ya mjumbe au mwenyekiti","tel")}
+${inp("u","Username (herufi na namba tu)","text",'autocomplete="username"')}${inp("p","Password (angalau herufi 6)","password",'autocomplete="new-password"')}
+<button onclick="register()">Tuma usajili</button>`}
+async function detailsCard(p=me){
+const {data:d}=await sb.from("fh2_details").select("*").eq("user_id",p.id).single();
+if(!d) return `<div class="card mu">Hakuna taarifa za usajili.</div>`;
+const L=[["Simu",p.phone],["Simu nyingine",d.phone2],["Tarehe ya kuzaliwa",d.dob],["Hali ya ndoa",d.marital],["Idadi ya watoto",d.children],["Mtu wa karibu",d.kin_name+" - "+d.kin_phone],["Anaishi sasa",d.residence],["Namba ya NIDA",d.nida],["Mkoa",d.region],["Wilaya",d.district],["Kata/Kijiji",d.ward],["Mtaa",d.mtaa],["Shina",d.shina],["Mjumbe/Mwenyekiti",d.leader_name+" - "+d.leader_phone]];
+return `<div class="card"><div style="display:flex;gap:14px;flex-wrap:wrap">${d.photo?`<img src="${esc(d.photo)}" alt="" style="width:96px;height:120px;object-fit:cover;border-radius:8px;border:2px solid var(--or)">`:`<i class="av" style="width:96px;height:120px;border-radius:8px;font-size:40px;margin:0">${esc(p.full_name[0])}</i>`}<div style="flex:1;min-width:220px"><h3 style="margin-top:0">Taarifa za usajili</h3><div class="grid">${L.map(([k,v])=>`<div><div class="mu">${k}</div>${esc(v)||"-"}</div>`).join("")}</div></div></div></div>`}
+async function viewDet(id){const {data:p}=await sb.from("fh2_profiles").select("*").eq("id",id).single();$("det").innerHTML=await detailsCard(p)+'<button class="g" onclick="closeDet()">Funga</button>';$("det").scrollIntoView({behavior:"smooth"})}
+function closeDet(){$("det").innerHTML=""}
+const HISTORIA=["Maandishi ya historia ya familia yataongezwa hapa."];
+const MK=[
+["Umoja na upendo wa familia",["Kudumisha upendo na mshikamano.","Kuheshimiana na kusaidiana.","Kutatua migogoro kwa amani.","Kufanya mikutano ya familia."]],
+["Maendeleo ya kiuchumi",["Kuanzisha miradi ya familia.","Kuwa na mfuko wa maendeleo ya familia.","Kununua viwanja na kujenga nyumba.","Kuweka akiba kwa ajili ya dharura."]],
+["Elimu na maarifa",["Kusaidiana katika gharama za elimu.","Kuhamasisha watoto kusoma.","Kusaidia wanafamilia kupata ujuzi.","Kuwekeza katika elimu ya kizazi kijacho."]],
+["Kuimarisha undugu",["Kufahamiana kwa wanafamilia wote.","Kutembeleana mara kwa mara.","Kusaidiana wakati wa shida na furaha.","Kuandaa mikutano na sherehe za kifamilia."]],
+["Kumiliki mali za familia",["Kujenga nyumba ya familia.","Kumiliki ardhi na viwanja.","Kuanzisha biashara za pamoja.","Kuwa na mali zitakazorithishwa kwa vizazi vijavyo."]],
+["Kusaidiana kijamii",["Kuwasaidia wagonjwa.","Kuwasaidia wenye mahitaji maalumu.","Kusaidiana katika misiba.","Kuwajali wazee wa familia."]]];
+const ML=["Kuanzisha kampuni au taasisi ya familia.","Kuwa na akaunti rasmi ya familia.","Kuanzisha mfuko wa kusaidia yatima na wenye uhitaji.","Kuhifadhi historia, picha na kumbukumbu za familia.","Kujenga urithi mzuri kwa kizazi kijacho.","Kuwa na mkakati wa maendeleo wa miaka 5, 10 na 20."];
+function goalsPage(){const card=(n,t,L)=>`<div class="card"><h3 style="margin:0 0 10px;display:flex;align-items:center"><i class="av">${n}</i>${esc(t)}</h3><ul style="margin:0;padding-left:22px">${L.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`;
+$("app").innerHTML=`<button class="g" onclick="boot()">Rudi</button><h2 class="gold" style="margin:16px 0 4px">MALENGO MAKUU YA FAMILIA</h2>${MK.map((g,i)=>card(i+1,g[0],g[1])).join("")}<div class="card"><h3 style="margin:0 0 10px">Malengo mengine ya muda mrefu</h3><ol start="7" style="margin:0;padding-left:26px">${ML.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`}
+function menu(o){$("dr").classList.toggle("on",!!o);$("ov").classList.toggle("on",!!o)}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){menu(0);$("lm").classList.remove("on")}});
+function leader(){$("lmi").src=$("lead").querySelector("img").src;$("lm").classList.add("on")}
+function textPage(t,L){$("app").innerHTML=`<div class="card"><button class="g" onclick="boot()">Rudi</button><h2 class="gold" style="margin:16px 0 10px">${t}</h2>${L.map(x=>`<p>${esc(x)}</p>`).join("")}</div>`}
+function goPage(k){menu(0);window.scrollTo(0,0);
+if(k==="hist")return textPage("Historia ya familia",HISTORIA);
+if(k==="goals")return goalsPage();
+if(k==="reg"){if(me)return say("Tayari umeingia kwenye akaunti yako.");return authView("reg")}
+boot()}
+let PAYS=[];
+const IDCARD=`<div class="card"><h3 style="margin-top:0">Kitambulisho changu</h3><canvas id="idc"></canvas><button class="o" onclick="dl($('idc'),'kitambulisho-'+memNo(me)+'.png')">Pakua kitambulisho</button></div>`;
+function qrUrl(t){try{const q=qrcode(0,"M");q.addData(t);q.make();return q.createDataURL(5,2)}catch(e){return ""}}
+function loadImg(s){return new Promise(r=>{if(!s)return r(null);const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s})}
+function gframe(x,W,H){const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#b8860b");g.addColorStop(.5,"#ffd700");g.addColorStop(1,"#b8860b");x.fillStyle="#000";x.fillRect(0,0,W,H);x.strokeStyle=g;x.lineWidth=8;x.strokeRect(4,4,W-8,H-8);return g}
+function fit(x,t,w,s,b){x.font=(b||"")+" "+s+"px system-ui,sans-serif";while(x.measureText(t).width>w&&s>11){s--;x.font=(b||"")+" "+s+"px system-ui,sans-serif"}}
+function dl(c,n){c.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;a.click()})}
+async function drawId(c,p,d){const W=640,H=380;c.width=W;c.height=H;const x=c.getContext("2d"),g=gframe(x,W,H);
+x.textAlign="center";x.fillStyle=g;x.font="bold 19px system-ui,sans-serif";x.fillText("UKOO WA SINIENGA NA WANAFAMILIA WENGINE",W/2,48);
+x.fillStyle="#ff8a1f";x.font="14px system-ui,sans-serif";x.fillText("KITAMBULISHO CHA UANACHAMA",W/2,72);
+const im=await loadImg(d&&d.photo);x.strokeStyle=g;x.lineWidth=4;x.strokeRect(34,100,150,188);
+if(im)x.drawImage(im,36,102,146,184);else{x.fillStyle="#222";x.fillRect(36,102,146,184);x.fillStyle=g;x.font="bold 60px system-ui";x.fillText(p.full_name[0],109,215)}
+x.textAlign="left";[["Jina",p.full_name],["Familia",p.family],["Namba ya uanachama",memNo(p)],["Simu",p.phone||"-"]].forEach((r,i)=>{x.fillStyle="#9a98a8";x.font="13px system-ui,sans-serif";x.fillText(r[0],210,118+i*44);x.fillStyle="#f4f2f7";fit(x,r[1],255,19,"bold");x.fillText(r[1],210,140+i*44)});
+const q=await loadImg(qrUrl("UKOO:"+memNo(p)+":"+p.username));if(q){x.fillStyle="#fff";x.fillRect(480,110,128,128);x.drawImage(q,484,114,120,120)}
+x.textAlign="center";const ok=p.status==="approved";x.fillStyle=ok?"#2ecc71":"#ff8a1f";x.font="bold 16px system-ui,sans-serif";x.fillText(ok?"AMEKUBALIWA":"INASUBIRI IDHINI YA ADMIN",W/2,330)}
+async function showId(){const c=$("idc");if(!c)return;const {data:d}=await sb.from("fh2_details").select("photo").eq("user_id",me.id).single();await drawId(c,me,d)}
+async function drawRc(c,pay,p){const W=560,H=530;c.width=W;c.height=H;const x=c.getContext("2d"),g=gframe(x,W,H);
+x.textAlign="center";x.fillStyle=g;x.font="bold 17px system-ui,sans-serif";x.fillText("UKOO WA SINIENGA NA WANAFAMILIA WENGINE",W/2,46);
+x.fillStyle="#ff8a1f";x.font="bold 22px system-ui,sans-serif";x.fillText("RISITI YA MALIPO",W/2,80);
+const d0=new Date(pay.created_at),d1=new Date(d0.getTime()+PLANS[pay.plan].days*864e5),f=d=>d.toLocaleDateString("sw-TZ");
+const R=[["Risiti Na","RS-"+String(pay.id).padStart(5,"0")],["Tarehe ya malipo",f(d0)],["Mwanachama",p.full_name],["Namba ya uanachama",memNo(p)],["Familia",p.family],["Kifurushi",pay.plan==="yearly"?"Miezi 12":"Mwezi 1"],["Kiasi","TSh "+pay.amount.toLocaleString()],["Namba ya muamala",pay.ref],["Uanachama hadi",f(d1)]];
+x.textAlign="left";R.forEach((r,i)=>{const y=138+i*36;x.fillStyle="#9a98a8";x.font="14px system-ui,sans-serif";x.fillText(r[0],40,y);x.fillStyle="#f4f2f7";fit(x,String(r[1]),290,18,"bold");x.fillText(r[1],230,y)});
+x.textAlign="center";x.strokeStyle="#2ecc71";x.lineWidth=3;x.strokeRect(W/2-110,446,220,40);x.fillStyle="#2ecc71";x.font="bold 20px system-ui,sans-serif";x.fillText("IMETHIBITISHWA",W/2,473);
+x.fillStyle="#9a98a8";x.font="12px system-ui,sans-serif";x.fillText("Imetolewa kielektroniki. Asante kwa mchango wako.",W/2,512)}
+async function showRc(id){const pay=PAYS.find(p=>p.id===id);if(!pay)return;
+$("rc").innerHTML=`<div class="card"><canvas id="rcc"></canvas><button class="o" id="rcd">Pakua risiti</button> <button class="g" onclick="$('rc').innerHTML=''">Funga</button></div>`;
+await drawRc($("rcc"),pay,me);$("rcd").onclick=()=>dl($("rcc"),"risiti-RS-"+String(pay.id).padStart(5,"0")+".png");$("rc").scrollIntoView({behavior:"smooth"})}
+let ADM={ppl:[],pays:[]},recovering=false;
+const HOWTO=`<div class="card"><h3 style="margin-top:0">Jinsi ya kujiunga (hatua 4)</h3><div class="grid">${[["Jisajili","Jaza fomu na weka picha ya passport size (kitufe cha Jisajili chini)."],["Subiri idhini","Admin anakagua taarifa zako na kukukubali."],["Lipa","TSh 5,000 kwa mwezi au TSh 60,000 kwa miezi 12, Lipa kwa M-Pesa."],["Tumia akaunti","Pakua kitambulisho na risiti, soma matangazo."]].map((s,i)=>`<div><i class="av">${i+1}</i><b>${s[0]}</b><div class="mu">${s[1]}</div></div>`).join("")}</div></div>`;
+function stepsBar(n){if(!n)return"";const S=["Usajili","Idhini","Malipo","Uanachama hai"];return `<div class="card" style="display:flex;gap:8px;flex-wrap:wrap">${S.map((t,i)=>`<span class="tag ${i<n?"ok":""}">${i<n?"\u2713":i+1}. ${t}</span>`).join("")}</div>`}
+function memTag(u){if(!u)return `<span class="tag wait">Haujalipiwa</span> <button class="o" onclick="go('pay')">Lipa sasa</button>`;const d=Math.ceil((u-Date.now())/864e5);
+if(d<0)return `<span class="tag no">Umeisha muda</span> <button class="o" onclick="go('pay')">Huisha</button>`;
+const s=`<span class="tag ok">Hai hadi ${new Date(u).toLocaleDateString("sw-TZ")}</span>`;return d<=7?s+` <span class="tag wait">Inaisha baada ya siku ${d}</span> <button class="o" onclick="go('pay')">Huisha</button>`:s}
+function untilMap(pays){const m={};(pays||[]).filter(p=>p.status==="confirmed").forEach(p=>{const e=new Date(p.created_at).getTime()+PLANS[p.plan].days*864e5;if(!m[p.user_id]||e>m[p.user_id])m[p.user_id]=e});return m}
+async function feed(){const [{data:a},{data:c}]=await Promise.all([sb.from("fh2_announcements").select("*").order("created_at",{ascending:false}),sb.from("fh2_contributions").select("name").order("created_at",{ascending:false})]);let h="";
+(a||[]).slice(0,2).forEach(x=>{h+=`<div class="card" style="border-color:var(--or)"><h3 style="margin:0 0 6px">Tangazo</h3><div style="white-space:pre-wrap">${esc(x.body)}</div><div class="mu" style="margin:6px 0">${new Date(x.created_at).toLocaleDateString("sw-TZ")}</div><a class="bt wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(x.body)}">Shiriki WhatsApp</a></div>`});
+if((c||[]).length)h+=`<div class="card"><h3 style="margin:0 0 8px">Waliochangia</h3><div class="tk"><span>${c.map(x=>"&#10084; "+esc(x.name)).join(" &nbsp;&nbsp; ")}</span></div></div>`;return h}
+function adminExtra(anns,cons,ppl,pays){const um=untilMap(pays),now=Date.now(),ap=(ppl||[]).filter(p=>p.status==="approved");
+const exp=ap.filter(p=>um[p.id]&&um[p.id]<now),soon=ap.filter(p=>um[p.id]&&um[p.id]>=now&&um[p.id]-now<=7*864e5),none=ap.filter(p=>!um[p.id]),dt=p=>new Date(um[p.id]).toLocaleDateString("sw-TZ");
+const li=(L,f)=>L.map(p=>`<div class="row"><span>${esc(p.full_name)} <span class="mu">${esc(p.family)} | ${esc(p.phone)}</span></span><span class="mu">${f(p)}</span></div>`).join("")||'<span class="mu">Hakuna.</span>';
+return `<div class="card"><h3 style="margin-top:0">Hali ya uanachama</h3><h4 style="margin:6px 0">Wanaokaribia kuisha (siku 7)</h4>${li(soon,dt)}<h4 style="margin:12px 0 6px">Walioisha muda</h4>${li(exp,dt)}<h4 style="margin:12px 0 6px">Hawajalipa kabisa: ${none.length}</h4><button class="b" onclick="csvDl()">Pakua orodha ya wanachama (Excel/CSV)</button></div>
+<div class="card"><h3 style="margin-top:0">Tangazo kwa wanachama wote</h3><textarea id="an" rows="3" placeholder="Andika tangazo hapa"></textarea><button class="o" onclick="addAnn()">Tuma tangazo</button>${(anns||[]).slice(0,5).map(a=>`<div class="row"><span style="white-space:pre-wrap">${esc(a.body)}</span><span><a class="bt wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(a.body)}">WhatsApp</a> <button class="r" onclick="delRow('fh2_announcements',${a.id})">Futa</button></span></div>`).join("")}</div>
+<div class="card"><h3 style="margin-top:0">Michango</h3><div class="grid"><input id="cn" placeholder="Jina la aliyechanga"><input id="ca" type="number" placeholder="Kiasi TSh (si lazima)"></div><button class="o" onclick="addCon()">Ongeza</button>${(cons||[]).map(c=>`<div class="row"><span>${esc(c.name)} <span class="mu">${c.amount?"TSh "+Number(c.amount).toLocaleString():""}</span></span><button class="g" onclick="delRow('fh2_contributions',${c.id})">Futa</button></div>`).join("")}</div>`}
+async function addAnn(){const b=$("an").value.trim();if(!b)return say("Andika tangazo.",true);const {error}=await sb.from("fh2_announcements").insert({body:b});error?say(error.message,true):adminView()}
+async function addCon(){const n=$("cn").value.trim();if(!n)return say("Weka jina.",true);const {error}=await sb.from("fh2_contributions").insert({name:n,amount:+$("ca").value||null});error?say(error.message,true):adminView()}
+async function delRow(t,id){if(!confirm("Kufuta?"))return;const {error}=await sb.from(t).delete().eq("id",id);error?say(error.message,true):adminView()}
+function csvDl(){const um=untilMap(ADM.pays),now=Date.now(),q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+const R=[["Jina","Familia","Username","Simu","Hali ya usajili","Hali ya malipo"],...ADM.ppl.map(p=>[p.full_name,p.family,p.username,p.phone,{approved:"Amekubaliwa",pending:"Anasubiri",rejected:"Amekataliwa"}[p.status],um[p.id]?(um[p.id]>now?"Hai hadi "+new Date(um[p.id]).toLocaleDateString("sw-TZ"):"Umeisha"):"Hajalipa"])];
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+R.map(r=>r.map(q).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"}));a.download="wanachama-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
+async function forgot(){const u=prompt("Weka username yako:");if(!u)return;
+if(u.trim().toLowerCase()!==ADMIN_USERNAME)return say("Wasiliana na admin akuwekee password mpya (namba za msaada ziko chini ya ukurasa).",true);
+const {error}=await sb.auth.resetPasswordForEmail(ADMIN_EMAIL,{redirectTo:location.href.split("#")[0].split("?")[0]});
+error?say(error.message,true):say("Link ya kubadilisha password imetumwa kwenye barua pepe "+ADMIN_EMAIL+". Ifungue ili urudi hapa.")}
+function recoverView(){recovering=true;$("app").innerHTML=`<div class="card"><h3 style="margin-top:0">Weka password mpya</h3><label>Password mpya (angalau herufi 6)</label><input id="np" type="password" autocomplete="new-password"><button onclick="saveNewPw()">Hifadhi password</button></div>`}
+async function saveNewPw(){const p=$("np").value;if(p.length<6)return say("Password iwe angalau herufi 6.",true);const {error}=await sb.auth.updateUser({password:p});if(error)return say(error.message,true);recovering=false;history.replaceState(null,"",location.pathname);say("Password imebadilishwa. Karibu tena.");boot()}
+async function galleryCard(){const {data}=await sb.rpc("fh2_public_members");const L=data||[];
+return `<div class="card"><h3 style="margin-top:0">Wanafamilia waliojisajili (${L.length})</h3>${L.length?`<div class="pg">${L.map(m=>`<div class="pt">${m.photo?`<img src="${esc(m.photo)}" alt="${esc(m.full_name)}">`:`<i class="av big">${esc(m.full_name[0])}</i>`}<div>${esc(m.full_name)}</div><div class="mu">${esc(m.family)}</div></div>`).join("")}</div>`:`<span class="mu">Bado hakuna. Kuwa wa kwanza kujisajili.</span>`}</div>`}
+async function setPw(id,n){const pw=prompt("Password mpya ya "+n+" (angalau herufi 6):");if(!pw)return;if(pw.length<6)return say("Password iwe angalau herufi 6.",true);
+const {error}=await sb.rpc("fh2_admin_set_password",{target:id,newpass:pw});if(error)return say(error.message,true);alert("Password mpya ya "+n+": "+pw+"\nMpe mwanachama, kisha amshauri aibadilishe.")}
+async function changePw(){const p=prompt("Password yako mpya (angalau herufi 6):");if(!p)return;if(p.length<6)return say("Password iwe angalau herufi 6.",true);const {error}=await sb.auth.updateUser({password:p});error?say(error.message,true):say("Password imebadilishwa.")}
+async function authView(mode="login"){
+if(mode==="reg"){$("app").innerHTML=`<div class="card"><button class="g" onclick="authView()">Rudi</button><div style="height:14px"></div>${regForm()}</div>`;return}
+$("app").innerHTML=HOWTO+`<div id="gal"></div>
+<div class="card"><h3 style="margin-top:0">Ingia</h3>
+<label>Username</label><input id="u" autocomplete="username">
+<label>Password</label><input id="p" type="password" autocomplete="current-password">
+<button onclick="login()">Ingia</button> <button class="g" onclick="forgot()">Umesahau password?</button></div>
+<div style="text-align:center;margin:26px 0 10px"><div class="mu" style="margin-bottom:10px">Bado hujajiunga na familia yako?</div><button class="o" style="font-size:18px;padding:14px 38px" onclick="authView('reg')">Jisajili</button></div>`;
+$("gal").innerHTML=await galleryCard()}
+
+async function login(){
+  const {error} = await sb.auth.signInWithPassword({email:mail($("u").value), password:$("p").value});
+  if(error) return say("Username au password si sahihi.", true);
+  boot();
+}
+
+async function register(){
+  const u=$("u").value.trim(), n=$("n").value.trim(), p=$("p").value;
+  if(!/^[a-zA-Z0-9]{3,}$/.test(u)) return say("Username iwe herufi na namba tu, angalau 3.", true);
+  if(!n) return say("Weka majina kamili.", true);
+  if(!photo) return say("Weka picha ya passport size.", true);
+  if(!$("ph").value.trim()) return say("Weka namba ya simu.", true);
+  if(p.length<6) return say("Password iwe angalau herufi 6.", true);
+  const {error} = await sb.auth.signUp({email:mail(u), password:p, options:{data:{username:u.toLowerCase(),full_name:n,phone:$("ph").value.trim(),family:$("f").value}}});
+  if(error) return say(error.message.includes("already")?"Username hii imeshatumika.":error.message, true);
+  const {data:{session}} = await sb.auth.getSession(), g=i=>$(i).value.trim();
+  if(session){ const {error:e2} = await sb.from("fh2_details").insert({user_id:session.user.id,photo,dob:g("dob")||null,marital:g("ms"),children:+g("ch")||0,phone2:g("ph2"),kin_name:g("kn"),kin_phone:g("kp"),residence:g("res"),nida:g("nida"),region:g("rg"),district:g("ds"),ward:g("wd"),mtaa:g("mt"),shina:g("sh"),leader_name:g("ln"),leader_phone:g("lp")}); if(e2) say("Taarifa za ziada hazikuhifadhiwa: "+e2.message, true); }
+  say("Usajili umepokelewa. Subiri admin akukubali.");
+  boot();
+}
+
+async function logout(){ await sb.auth.signOut(); boot(); }
+
+function render(){
+  const admin = me.role==="admin" && me.status==="approved";
+  let nav = `<div class="tabs"><button class="${tab=='home'?'':'g'}" onclick="go('home')">Nyumbani</button>`;
+  if(me.status==="approved") nav += `<button class="${tab=='pay'?'':'g'}" onclick="go('pay')">Malipo</button>`;
+  if(admin) nav += `<button class="o" onclick="go('adm')">Admin</button>`;
+  nav += `<button class="g" onclick="changePw()">Badilisha password</button><button class="g" onclick="logout()">Toka</button></div>`;
+  $("app").innerHTML = `<div class="card"><h2 class="gold" style="margin:0">${esc(me.full_name)}</h2>
+    <div class="mu">Familia ${esc(me.family)} | ${memNo(me)} | ${tagOf(me.status)}</div></div>${nav}<div id="view"></div>`;
+  ({home:homeView,pay:payView,adm:adminView})[tab]();
+}
+function go(t){ tab=t; render(); }
+
+async function homeView(){
+  if(me.status!=="approved"){
+    $("view").innerHTML = stepsBar(me.status==="pending"?1:0)+`<div class="card">${me.status==="pending"?"Usajili wako umepokelewa. Admin atakagua taarifa zako hapa chini; ukikubaliwa utaona dashboard kamili.":"Usajili wako umekataliwa. Wasiliana na admin."}</div>`+await detailsCard()+(me.status==="pending"?IDCARD:""); showId(); return;
+  }
+  const {data:mem} = await sb.from("fh2_profiles").select("full_name,member_seq,phone").eq("status","approved").eq("family",me.family).order("member_seq");
+  const {data:pays} = await sb.from("fh2_payments").select("*").eq("user_id",me.id).eq("status","confirmed").order("created_at",{ascending:false});
+  let until=null; (pays||[]).forEach(p=>{const e=new Date(p.created_at).getTime()+PLANS[p.plan].days*864e5; if(!until||e>until) until=e;});
+  const active = until && until>Date.now();
+  $("view").innerHTML = stepsBar(active?4:2)+(await feed())+(await detailsCard())+IDCARD+`<div class="card"><h3 style="margin-top:0">Uanachama</h3>
+    ${memTag(until)}</div>
+    <div class="card"><h3 style="margin-top:0">Wanachama wa familia ${esc(me.family)} (${(mem||[]).length})</h3>
+    ${(mem||[]).map(m=>`<div class="row"><span><i class="av">${esc(m.full_name[0])}</i>${esc(m.full_name)}</span><span class="mu">UKOO-${String(m.member_seq).padStart(4,"0")}</span></div>`).join("")}</div>`+await galleryCard()+TREEFAM; showId();
+}
+
+const nd=(x,y,t)=>`<rect x="${x-50}" y="${y}" width="100" height="34" rx="8" fill="#0b0b10" stroke="url(#gd)" stroke-width="2"/><text x="${x}" y="${y+22}" text-anchor="middle" fill="#f4f2f7" font-size="13" font-family="system-ui">${t}</text>`;
+const TREEFAM=`<div class="card"><h3 style="margin-top:0">Mti wa Familia (mfano)</h3><div style="overflow-x:auto"><svg viewBox="0 0 640 250" style="min-width:520px;width:100%"><path d="M310 37H330M320 37V70M100 70H540M100 70V104M320 70V104M540 70V104M100 138V160M60 160H180M60 160V190M180 160V190M540 138V190" stroke="url(#gd)" stroke-width="2" fill="none"/>${nd(260,20,"Babu")}${nd(380,20,"Bibi")}${nd(100,104,"Baba")}${nd(320,104,"Mama")}${nd(540,104,"Mjomba")}${nd(60,190,"Mtoto 1")}${nd(180,190,"Mtoto 2")}${nd(540,190,"Mtoto 3")}</svg></div><div class="mu">Mti halisi utajengwa kutokana na usajili wa wanachama.</div></div>`;
+function payView(){
+  $("view").innerHTML = `<div class="card"><h3 style="margin-top:0">Lipa kwa M-Pesa</h3>
+    <div class="mu">Lipa Namba (mitandao yote)</div><div class="lipa">${esc(LIPA_NAMBA)}</div><div class="mu">Jina: ${esc(LIPA_JINA)}</div></div>
+    <div class="card"><label>Kifurushi</label><select id="pl">${Object.entries(PLANS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join("")}</select>
+    <label>Namba ya muamala (kutoka kwenye ujumbe wa M-Pesa)</label><input id="rf">
+    <button class="o" onclick="sendPay()">Tuma uthibitisho</button></div><div class="card" id="mine"></div><div id="rc"></div>`;
+  loadMine();
+}
+async function sendPay(){
+  const pl=$("pl").value, rf=$("rf").value.trim();
+  if(rf.length<5) return say("Weka namba ya muamala.", true);
+  const {error} = await sb.from("fh2_payments").insert({user_id:me.id,plan:pl,amount:PLANS[pl].amount,ref:rf});
+  if(error) return say("Imeshindikana: "+error.message, true);
+  say("Uthibitisho umetumwa. Admin atahakiki."); payView();
+}
+async function loadMine(){
+  const {data} = await sb.from("fh2_payments").select("*").eq("user_id",me.id).order("created_at",{ascending:false});
+  PAYS=data||[]; $("mine").innerHTML = `<h3 style="margin-top:0">Malipo yangu</h3>` + ((data||[]).map(p=>`<div class="row"><span>TSh ${p.amount.toLocaleString()} - ${esc(p.ref)}</span><span>${tagOf(p.status)}${p.status==="confirmed"?` <button class="o" onclick="showRc(${p.id})">Risiti</button>`:""}</span></div>`).join("") || `<span class="mu">Bado hakuna malipo.</span>`);
+}
+
+async function adminView(){
+  const [{data:ppl},{data:pays},{data:anns},{data:cons}] = await Promise.all([
+    sb.from("fh2_profiles").select("*").order("member_seq"),
+    sb.from("fh2_payments").select("*, fh2_profiles(full_name,family)").order("created_at",{ascending:false}),
+    sb.from("fh2_announcements").select("*").order("created_at",{ascending:false}),
+    sb.from("fh2_contributions").select("*").order("created_at",{ascending:false})]);
+  ADM={ppl:ppl||[],pays:pays||[]};
+  const pend = (ppl||[]).filter(p=>p.status==="pending"), pp=(pays||[]).filter(p=>p.status==="pending");
+  const appr = (ppl||[]).filter(p=>p.status==="approved").length;
+  $("view").innerHTML = `<div class="grid"><div class="card"><div class="mu">Waliokubaliwa</div><h2 style="margin:0;color:var(--pink)">${appr}</h2></div>
+    <div class="card"><div class="mu">Wanasubiri</div><h2 style="margin:0;color:var(--or)">${pend.length}</h2></div>
+    <div class="card"><div class="mu">Malipo yanasubiri</div><h2 style="margin:0;color:var(--bl)">${pp.length}</h2></div></div>
+    ${adminExtra(anns,cons,ppl,pays)}<div id="det"></div><div class="card"><h3 style="margin-top:0">Usajili unaosubiri</h3>${pend.map(p=>`<div class="row"><span>${esc(p.full_name)}<br><span class="mu">${esc(p.family)} | ${esc(p.username)} | ${esc(p.phone)}</span></span>
+      <span><button class="g" onclick="viewDet('${p.id}')">Taarifa</button> <button class="b" onclick="setSt('${p.id}','approved')">Kubali</button> <button class="r" onclick="setSt('${p.id}','rejected')">Kataa</button></span></div>`).join("")||'<span class="mu">Hakuna.</span>'}</div>
+    <div class="card"><h3 style="margin-top:0">Malipo yanayosubiri</h3>${pp.map(p=>`<div class="row"><span>${esc(p.fh2_profiles?.full_name)} - TSh ${p.amount.toLocaleString()}<br><span class="mu">Muamala: ${esc(p.ref)}</span></span>
+      <span><button class="b" onclick="setPay(${p.id},'confirmed')">Thibitisha</button> <button class="r" onclick="setPay(${p.id},'rejected')">Kataa</button></span></div>`).join("")||'<span class="mu">Hakuna.</span>'}</div>
+    <div class="card"><h3 style="margin-top:0">Wanachama wote</h3>${(ppl||[]).map(p=>`<div class="row"><span>${esc(p.full_name)} <span class="mu">${esc(p.family)} | ${esc(p.username)} | ${esc(p.phone)}</span></span>
+      <span>${tagOf(p.status)} <button class="g" onclick="viewDet('${p.id}')">Taarifa</button> <button class="o" onclick="setPw('${p.id}','${esc(p.full_name)}')">Password</button> ${p.id===me.id?"":(p.status!=="approved"?`<button class="b" onclick="setSt('${p.id}','approved')">Kubali</button> `:"")+(p.status!=="rejected"?`<button class="o" onclick="rejectMem('${p.id}','${esc(p.full_name)}')">Kataa</button> `:"")+`<button class="g" onclick="delMem('${p.id}','${esc(p.full_name)}')">Futa</button>`}</span></div>`).join("")}</div>`;
+}
+async function setSt(id,s){ const {error}=await sb.from("fh2_profiles").update({status:s}).eq("id",id); error?say(error.message,true):adminView(); }
+async function rejectMem(id,n){ if(confirm("Kumkataa "+n+"? Hataweza tena kuona dashboard ya wanachama.")) setSt(id,"rejected"); }
+async function setPay(id,s){ const {error}=await sb.from("fh2_payments").update({status:s}).eq("id",id); error?say(error.message,true):adminView(); }
+async function delMem(id,n){ if(!confirm("Kufuta "+n+"? Hatua hii haiwezi kurudishwa.")) return; const {error}=await sb.from("fh2_profiles").delete().eq("id",id); error?say(error.message,true):adminView(); }
+
+sb.auth.onAuthStateChange(ev=>{if(ev==="PASSWORD_RECOVERY")recoverView()});
+boot();
+</script>
+</body>
+</html>
